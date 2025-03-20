@@ -13,29 +13,47 @@
 - **Data Storage:** Local JSON files (easy to backup and version control)
 - **Styling:** Tailwind CSS for simple, responsive design
 
-### 3. Key Features
-1. **Admin Access**
-   - Simple password protection for admin pages
-   - No need for complex user management
+### 3. Development Flow
+1. **Authentication First Approach**
+   - Set up basic auth
+   - Create protected routes
+   - Add Cloudinary to protected routes
+   - Test everything once
 
-2. **Blog Management**
-   - Create new posts with text and multiple images
-   - Edit or delete existing posts
-   - Preview posts before publishing
+2. **Protected Features**
+   - Admin dashboard
+   - Image uploads
+   - Post creation/editing
+   - Site settings
 
-3. **Image Handling**
-   - Direct upload to Cloudinary
-   - Image optimization and responsive sizing
-   - Support for multiple images per post
+3. **Public Features**
+   - Home page
+   - Blog post viewing
+   - Image galleries
 
-### 4. Page Structure
-- **Public Pages:**
-  - Home (blog list)
-  - Individual blog post view
-- **Admin Pages:**
-  - Login
-  - New post
-  - Edit post
+### 4. Implementation Phases
+1. **Setup & Auth (Week 1)**
+   - [x] Next.js project initialization
+   - [ ] Basic password protection
+   - [ ] Protected admin routes
+   - [ ] Admin dashboard UI
+
+2. **Cloudinary Integration (Week 1-2)**
+   - [ ] Install Cloudinary SDK
+   - [ ] Configure credentials
+   - [ ] Test image uploads
+   - [ ] Image transformation setup
+
+3. **Core Features (Week 2)**
+   - [ ] Blog post creation
+   - [ ] Image upload functionality
+   - [ ] Post viewing and listing
+   - [ ] Admin post management
+
+4. **Polish (Week 3)**
+   - [ ] Styling and responsive design
+   - [ ] Image optimization
+   - [ ] Testing and bug fixes
 
 ### 5. Data Structure
 ```json
@@ -55,18 +73,24 @@
 }
 ```
 
-### 6. Development Phases
-1. **Setup (Week 1)**
-   - Next.js project initialization
-   - Cloudinary integration
-   - Basic admin protection
+### 6. Authentication Design
+- Simple password protection
+- Protected admin routes
+- Secure session management
+- No need for complex user management
 
-2. **Core Features (Week 2)**
-   - Blog post creation
-   - Image upload functionality
-   - Post viewing and listing
+### 7. Testing Strategy
+1. **Auth Testing**
+   - Verify protected routes
+   - Test invalid credentials
+   - Check session persistence
 
-3. **Polish (Week 3)**
-   - Styling and responsive design
-   - Image optimization
-   - Testing and bug fixes
+2. **Cloudinary Testing**
+   - Upload success cases
+   - Error handling
+   - Image transformations
+
+3. **Integration Testing**
+   - End-to-end post creation
+   - Image upload in posts
+   - Public view access
