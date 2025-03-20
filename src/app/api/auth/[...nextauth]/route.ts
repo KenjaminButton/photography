@@ -1,6 +1,5 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import bcrypt from 'bcryptjs';
 
 const handler = NextAuth({
   providers: [
@@ -11,21 +10,31 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error('Missing credentials');
-        }
-
-        // Check if the credentials match the admin credentials
+        console.log('=== Auth Debug ===');
+        console.log('Attempting login with:', credentials?.email);
+        
+        // TEMPORARY: Using plain text comparison for testing
         if (
-          credentials.email === process.env.ADMIN_EMAIL &&
-          await bcrypt.compare(credentials.password, process.env.ADMIN_PASSWORD!)
+          credentials?.email === process.env.ADMIN_EMAIL &&
+          credentials?.password === process.env.ADMIN_PASSWORD
         ) {
+          console.log('Login successful');
           return {
             id: '1',
             email: process.env.ADMIN_EMAIL,
             name: 'Admin'
           };
         }
+
+        console.log('Login failed');
+        console.log('Expected:', {
+          email: process.env.ADMIN_EMAIL,
+          password: process.env.ADMIN_PASSWORD
+        });
+        console.log('Received:', {
+          email: credentials?.email,
+          password: credentials?.password
+        });
 
         throw new Error('Invalid credentials');
       }

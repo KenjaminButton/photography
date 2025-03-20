@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kenjamin Button Photography
+
+A modern photography portfolio and blog built with Next.js 14, featuring secure admin authentication and dynamic content management.
+
+## Features
+
+- **Modern Stack**: Next.js 14, TypeScript, and Tailwind CSS
+- **Secure Authentication**: NextAuth.js implementation with protected admin routes
+- **Admin Dashboard**: Secure area for content management
+- **Responsive Design**: Beautiful, mobile-first layout using Geist font
+- **Blog System**: Coming soon - Dynamic blog post creation and management
+- **Image Management**: Coming soon - Cloudinary integration for optimized image delivery
 
 ## Getting Started
 
-First, run the development server:
-
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/KenjaminButton/photography.git
+cd photography
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up environment variables:
+Create a `.env.local` file with:
+```
+NEXTAUTH_SECRET=your_secure_secret
+ADMIN_EMAIL=your_admin_email
+ADMIN_PASSWORD=your_hashed_password
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Run the development server:
+```bash
+npm run dev
+```
 
-## Learn More
+Open [http://localhost:3000](http://localhost:3000) to view the site.
 
-To learn more about Next.js, take a look at the following resources:
+## Security
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Passwords are securely hashed using bcrypt
+- Protected admin routes with NextAuth.js
+- Environment variables for sensitive data
+- Session-based authentication
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Tech Stack
 
-## Deploy on Vercel
+- **Framework**: Next.js 14
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Authentication**: NextAuth.js
+- **Font**: Geist (by Vercel)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Development Status
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Currently implementing core features:
+- Basic site structure
+- Authentication system
+- Admin dashboard
+- Blog functionality
+- Image management
+- Portfolio layout
+
+## Contributing
+
+This is a personal project, but suggestions and feedback are welcome!
+
+## License
+
+MIT License - See LICENSE file for details
