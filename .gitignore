@@ -41,3 +41,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Security - never commit password scripts
+/scripts/*.js
+!/scripts/README.md
