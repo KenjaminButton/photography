@@ -1,5 +1,16 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import bcrypt from 'bcryptjs';
+
+export const validateEmail = (email: string) => {
+  const trimmedEmail = email.trim();
+  return trimmedEmail === process.env.ADMIN_EMAIL;
+};
+
+export const validatePassword = async (password: string, hashedPassword: string) => {
+  const trimmedPassword = password.trim();
+  return await bcrypt.compare(trimmedPassword, hashedPassword);
+};
 
 const handler = NextAuth({
   providers: [
@@ -10,42 +21,47 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        console.log('=== Auth Debug ===');
-        console.log('Attempting login with:', credentials?.email);
-        
-        // TEMPORARY: Using plain text comparison for testing
-        if (
-          credentials?.email === process.env.ADMIN_EMAIL &&
-          credentials?.password === process.env.ADMIN_PASSWORD
-        ) {
-          console.log('Login successful');
-          return {
-            id: '1',
-            email: process.env.ADMIN_EMAIL,
-            name: 'Admin'
-          };
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error('Please enter both email and password');
         }
 
-        console.log('Login failed');
-        console.log('Expected:', {
-          email: process.env.ADMIN_EMAIL,
-          password: process.env.ADMIN_PASSWORD
-        });
-        console.log('Received:', {
-          email: credentials?.email,
-          password: credentials?.password
-        });
+        // Validate email
+        if (!validateEmail(credentials.email)) {
+          throw new Error('Invalid email or password');
+        }
 
-        throw new Error('Invalid credentials');
+        // Get hashed password from env
+        const hashedPassword = process.env.ADMIN_PASSWORD;
+        if (!hashedPassword) {
+          throw new Error('Server configuration error');
+        }
+
+        // Validate password
+        const isValid = await validatePassword(
+          credentials.password,
+          hashedPassword
+        );
+
+        if (!isValid) {
+          throw new Error('Invalid email or password');
+        }
+
+        // Return minimal user object
+        return {
+          id: '1',
+          email: process.env.ADMIN_EMAIL,
+          name: 'Admin'
+        };
       }
     })
   ],
   pages: {
     signIn: '/admin/login',
+    error: '/admin/login',
   },
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 24 * 60 * 60, // 24 hours
   },
   callbacks: {
     async jwt({ token, user }) {

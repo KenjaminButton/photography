@@ -1,11 +1,18 @@
-'use client';
+'use server';
 
-import { useSession, signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
 
-export default function AdminDashboard() {
-  const { data: session } = useSession();
-  const router = useRouter();
+async function getSession() {
+  const session = await getServerSession();
+  if (!session) {
+    redirect('/unauthorized');
+  }
+  return session;
+}
+
+export default async function AdminDashboard() {
+  const session = await getSession();
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -14,12 +21,14 @@ export default function AdminDashboard() {
           <div className="border-4 border-dashed border-gray-200 rounded-lg p-4">
             <div className="flex justify-between items-center mb-4">
               <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-              <button
-                onClick={() => signOut({ callbackUrl: '/' })}
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Sign Out
-              </button>
+              <form action="/api/auth/signout" method="POST">
+                <button
+                  type="submit"
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Sign Out
+                </button>
+              </form>
             </div>
             <div className="bg-white shadow overflow-hidden sm:rounded-lg">
               <div className="px-4 py-5 sm:p-6">
