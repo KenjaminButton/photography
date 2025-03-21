@@ -3,16 +3,19 @@ import { db } from '@/db/config';
 import { validateMethod, withAdmin } from '@/lib/auth';
 
 // GET a single post by slug (public)
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { slug: string } }
-) {
+export async function GET(request: NextRequest) {
   try {
+    // Get slug from URL
+    const slug = request.nextUrl.pathname.split('/').pop();
+    if (!slug) {
+      return NextResponse.json({ error: 'Slug is required' }, { status: 400 });
+    }
+
     const result = await db.execute(`
       SELECT id, title, slug, content, published_at, created_at, updated_at
       FROM posts
       WHERE slug = ? AND status = 'published'
-    `, [params.slug]);
+    `, [slug]);
 
     if (result.rows.length === 0) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
@@ -26,15 +29,18 @@ export async function GET(
 }
 
 // PUT to update a post (admin only)
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { slug: string } }
-) {
+export async function PUT(request: NextRequest) {
   try {
     return await withAdmin(async () => {
-      validateMethod(req, ['PUT']);
+      validateMethod(request, ['PUT']);
       
-      const body = await req.json();
+      // Get slug from URL
+      const slug = request.nextUrl.pathname.split('/').pop();
+      if (!slug) {
+        return NextResponse.json({ error: 'Slug is required' }, { status: 400 });
+      }
+
+      const body = await request.json();
       const { title, content, status } = body;
       
       if (!title || !content) {
@@ -45,7 +51,7 @@ export async function PUT(
       }
 
       // Generate new slug if title changed
-      const slug = title.toLowerCase()
+      const newSlug = title.toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)/g, '');
 
@@ -63,10 +69,10 @@ export async function PUT(
       `, [
         title,
         JSON.stringify(content),
-        slug,
+        newSlug,
         status || 'draft',
         status === 'published' ? 'unixepoch()' : null,
-        params.slug
+        slug
       ]);
 
       if (result.rows.length === 0) {
@@ -85,19 +91,22 @@ export async function PUT(
 }
 
 // DELETE a post (admin only)
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { slug: string } }
-) {
+export async function DELETE(request: NextRequest) {
   try {
     return await withAdmin(async () => {
-      validateMethod(req, ['DELETE']);
+      validateMethod(request, ['DELETE']);
+
+      // Get slug from URL
+      const slug = request.nextUrl.pathname.split('/').pop();
+      if (!slug) {
+        return NextResponse.json({ error: 'Slug is required' }, { status: 400 });
+      }
 
       const result = await db.execute(`
         DELETE FROM posts 
         WHERE slug = ?
         RETURNING id
-      `, [params.slug]);
+      `, [slug]);
 
       if (result.rows.length === 0) {
         return NextResponse.json({ error: 'Post not found' }, { status: 404 });
