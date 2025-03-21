@@ -8,10 +8,9 @@ import AdminNav from '../../../../components/AdminNav';
 
 interface PageProps {
   params: Promise<{ id: string }>;
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default function EditPost({ params, searchParams }: PageProps) {
+export default function EditPost({ params }: PageProps) {
   const { status } = useSession();
   const router = useRouter();
   const [postId, setPostId] = useState<string | null>(null);
