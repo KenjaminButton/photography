@@ -6,7 +6,7 @@ import Link from 'next/link';
 import AdminNav from '../../../../components/AdminNav';
 
 export default function EditPost({ params }: { params: { id: string } }) {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const { id } = params;
 

@@ -14,25 +14,23 @@ cloudinary.config({
 async function testCloudinaryConnection() {
   try {
     // Try to get account details
-    const result = await cloudinary.api.ping();
+    await cloudinary.api.ping();
     console.log('✅ Successfully connected to Cloudinary!');
     
     // Get account usage info
     const usage = await cloudinary.api.usage();
-    console.log('Account details:', {
+    console.log('📊 Account Usage:', {
       plan: usage.plan,
       credits: usage.credits,
-      storage: usage.storage
+      bandwidth: usage.bandwidth,
+      storage: usage.storage,
+      requests: usage.requests
     });
-
-  } catch (error) {
-    console.error('❌ Failed to connect to Cloudinary:', error);
-    // Log environment variables (safely)
-    console.log('Environment check:', {
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME ? '✓' : '✗',
-      api_key: process.env.CLOUDINARY_API_KEY ? '✓' : '✗',
-      api_secret: process.env.CLOUDINARY_API_SECRET ? '✓' : '✗'
-    });
+    
+    return true;
+  } catch (err) {
+    console.error('❌ Failed to connect to Cloudinary:', err);
+    return false;
   }
 }
 
