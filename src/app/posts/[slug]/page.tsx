@@ -7,12 +7,30 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-async function getPost(slug: string) {
+interface Post {
+  published_at: number | null;
+  title: string;
+  content: string;
+  image_url?: string | null;
+  [key: string]: any;
+}
+
+async function getPost(slug: string): Promise<Post | null> {
   const result = await db.execute({
     sql: 'SELECT * FROM posts WHERE slug = ? AND status = ?',
     args: [slug, 'published']
   });
-  return result.rows[0] || null;
+  
+  if (!result.rows[0]) return null;
+  
+  const row = result.rows[0];
+  return {
+    published_at: row.published_at ? Number(row.published_at) : null,
+    title: String(row.title),
+    content: String(row.content),
+    image_url: row.image_url ? String(row.image_url) : null,
+    ...row
+  };
 }
 
 export default async function Post({ params }: PageProps) {
