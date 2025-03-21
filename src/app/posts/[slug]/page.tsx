@@ -3,6 +3,10 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
+
 async function getPost(slug: string) {
   const result = await db.execute({
     sql: 'SELECT * FROM posts WHERE slug = ? AND status = ?',
@@ -11,8 +15,9 @@ async function getPost(slug: string) {
   return result.rows[0] || null;
 }
 
-export default async function Post({ params }: { params: { slug: string } }) {
-  const post = await getPost(params.slug);
+export default async function Post({ params }: PageProps) {
+  const resolvedParams = await params;
+  const post = await getPost(resolvedParams.slug);
   
   if (!post) {
     notFound();
