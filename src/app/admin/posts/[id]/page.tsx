@@ -5,7 +5,14 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AdminNav from '../../../../components/AdminNav';
 
-export default function EditPost({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: {
+    id: string;
+  };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
+
+export default function EditPost({ params }: PageProps) {
   const { status } = useSession();
   const router = useRouter();
   const { id } = params;
