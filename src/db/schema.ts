@@ -7,6 +7,7 @@ const createPostsTable = `
     title TEXT NOT NULL,
     slug TEXT UNIQUE NOT NULL,
     content JSON,
+    image_url TEXT,
     status TEXT DEFAULT 'draft',
     published_at INTEGER,
     created_at INTEGER DEFAULT (unixepoch()),
@@ -30,11 +31,24 @@ const createImagesTable = `
   )
 `;
 
+// Add image_url column to posts table if it doesn't exist
+const addImageUrlColumn = `
+  ALTER TABLE posts ADD COLUMN image_url TEXT;
+`;
+
 export async function initializeSchema() {
   try {
     // Create tables
     await db.execute(createPostsTable);
     await db.execute(createImagesTable);
+    
+    // Add image_url column if it doesn't exist
+    try {
+      await db.execute(addImageUrlColumn);
+    } catch (error) {
+      // Column might already exist, which is fine
+      console.log('Note: image_url column might already exist');
+    }
     
     // Create index on posts.slug
     await db.execute('CREATE INDEX IF NOT EXISTS idx_posts_slug ON posts(slug)');

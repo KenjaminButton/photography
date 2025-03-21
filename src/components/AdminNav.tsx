@@ -11,8 +11,8 @@ export default function AdminNav() {
     const isActive = pathname === path;
     return `${
       isActive
-        ? 'bg-gray-900 text-white'
-        : 'text-gray-900 hover:bg-gray-100 hover:text-gray-900'
+        ? 'bg-blue-600 text-white'
+        : 'text-gray-900 hover:bg-blue-50'
     } px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150`;
   };
 
@@ -37,7 +37,7 @@ export default function AdminNav() {
           <div>
             <button
               onClick={() => signOut({ callbackUrl: '/' })}
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-colors duration-150"
+              className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-colors duration-150"
             >
               Sign Out
             </button>
