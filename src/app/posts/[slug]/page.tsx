@@ -8,11 +8,15 @@ interface PageProps {
 }
 
 interface Post {
-  published_at: number | null;
+  id: string;
   title: string;
+  slug: string;
   content: string;
-  image_url?: string | null;
-  [key: string]: any;
+  image_url: string | null;
+  status: 'draft' | 'published';
+  published_at: number | null;
+  created_at: number;
+  updated_at: number;
 }
 
 async function getPost(slug: string): Promise<Post | null> {
@@ -25,11 +29,15 @@ async function getPost(slug: string): Promise<Post | null> {
   
   const row = result.rows[0];
   return {
-    published_at: row.published_at ? Number(row.published_at) : null,
+    id: String(row.id),
     title: String(row.title),
+    slug: String(row.slug),
     content: String(row.content),
     image_url: row.image_url ? String(row.image_url) : null,
-    ...row
+    status: row.status as 'draft' | 'published',
+    published_at: row.published_at ? Number(row.published_at) : null,
+    created_at: Number(row.created_at),
+    updated_at: Number(row.updated_at)
   };
 }
 
