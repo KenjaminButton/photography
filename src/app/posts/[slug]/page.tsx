@@ -2,6 +2,7 @@ import { db } from '@/db/config';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import MarkdownContent from '@/components/MarkdownContent';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -20,25 +21,33 @@ interface Post {
 }
 
 async function getPost(slug: string): Promise<Post | null> {
-  const result = await db.execute({
-    sql: 'SELECT * FROM posts WHERE slug = ? AND status = ?',
-    args: [slug, 'published']
-  });
-  
-  if (!result.rows[0]) return null;
-  
-  const row = result.rows[0];
-  return {
-    id: String(row.id),
-    title: String(row.title),
-    slug: String(row.slug),
-    content: String(row.content),
-    image_url: row.image_url ? String(row.image_url) : null,
-    status: row.status as 'draft' | 'published',
-    published_at: row.published_at ? Number(row.published_at) : null,
-    created_at: Number(row.created_at),
-    updated_at: Number(row.updated_at)
-  };
+  try {
+    const result = await db.execute({
+      sql: 'SELECT * FROM posts WHERE slug = ? AND status = ?',
+      args: [slug, 'published'],
+    });
+
+    if (!result.rows[0]) {
+      return null;
+    }
+
+    const row = result.rows[0];
+    
+    return {
+      id: String(row.id),
+      title: String(row.title),
+      slug: String(row.slug),
+      content: String(row.content),
+      image_url: row.image_url ? String(row.image_url) : null,
+      status: row.status as 'draft' | 'published',
+      published_at: row.published_at ? Number(row.published_at) : null,
+      created_at: Number(row.created_at),
+      updated_at: Number(row.updated_at)
+    };
+  } catch (error) {
+    console.error('Error fetching post:', error);
+    return null;
+  }
 }
 
 export default async function Post({ params }: PageProps) {
@@ -59,13 +68,26 @@ export default async function Post({ params }: PageProps) {
     : null;
 
   return (
-    <main className="min-h-screen bg-white py-16 px-4">
-      <div className="max-w-4xl mx-auto">
-        <Link 
+    <main className="min-h-screen bg-gray-100">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Link
           href="/"
-          className="inline-block mb-8 text-[#26294D] hover:text-[#E092C1] transition-colors"
+          className="inline-flex items-center text-[#26294D] hover:text-[#B9A1E4] mb-8"
         >
-          ← Back to Gallery
+          <svg
+            className="w-5 h-5 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+          Back to Home
         </Link>
         
         <article>
@@ -91,9 +113,7 @@ export default async function Post({ params }: PageProps) {
           )}
           
           <div className="prose prose-lg max-w-none text-[#26294D]">
-            {typeof post.content === 'string' 
-              ? post.content
-              : JSON.stringify(post.content)}
+            <MarkdownContent content={post.content} />
           </div>
         </article>
       </div>

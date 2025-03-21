@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import AdminNav from '../../../../components/AdminNav';
+import MarkdownEditor from '@/components/MarkdownEditor';
 
 export default function NewPost() {
   const { status: sessionStatus } = useSession();
@@ -125,13 +126,9 @@ export default function NewPost() {
                   <label htmlFor="content" className="block text-[#26294D] font-medium mb-2">
                     Content
                   </label>
-                  <textarea
-                    id="content"
+                  <MarkdownEditor
                     value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    rows={6}
-                    className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#26294D] text-[#26294D]"
-                    required
+                    onChange={setContent}
                   />
                 </div>
 

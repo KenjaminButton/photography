@@ -16,6 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Kenjamin Button Photography",
   description: "Photography Portfolio and Blog",
+  colorScheme: "light",
 };
 
 export default function RootLayout({
