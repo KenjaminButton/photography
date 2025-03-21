@@ -1,6 +1,5 @@
 import { getServerSession } from 'next-auth';
 import { NextRequest } from 'next/server';
-import { headers } from 'next/headers';
 
 export async function isAdmin(): Promise<boolean> {
   const session = await getServerSession();
@@ -21,10 +20,9 @@ export async function withAdmin<T>(handler: () => Promise<T>): Promise<T> {
 }
 
 // Helper to get request method and validate it
-export function validateMethod(req: NextRequest, allowedMethods: string[]) {
+export function validateMethod(req: NextRequest, allowedMethods: string[]): void {
   const method = req.method.toUpperCase();
   if (!allowedMethods.includes(method)) {
     throw new Error(`Method ${method} not allowed`);
   }
-  return method;
 }

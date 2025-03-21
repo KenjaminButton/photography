@@ -19,22 +19,16 @@ const createPostsTable = `
 const createImagesTable = `
   CREATE TABLE IF NOT EXISTS images (
     id TEXT PRIMARY KEY,
-    cloudinary_id TEXT NOT NULL,
-    url TEXT NOT NULL,
-    width INTEGER NOT NULL,
-    height INTEGER NOT NULL,
-    format TEXT NOT NULL,
     post_id TEXT,
+    url TEXT NOT NULL,
+    public_id TEXT NOT NULL,
     created_at INTEGER DEFAULT (unixepoch()),
-    updated_at INTEGER DEFAULT (unixepoch()),
-    FOREIGN KEY (post_id) REFERENCES posts(id)
+    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
   )
 `;
 
 // Add image_url column to posts table if it doesn't exist
-const addImageUrlColumn = `
-  ALTER TABLE posts ADD COLUMN image_url TEXT;
-`;
+const addImageUrlColumn = `ALTER TABLE posts ADD COLUMN image_url TEXT`;
 
 export async function initializeSchema() {
   try {
@@ -45,7 +39,7 @@ export async function initializeSchema() {
     // Add image_url column if it doesn't exist
     try {
       await db.execute(addImageUrlColumn);
-    } catch (error) {
+    } catch {
       // Column might already exist, which is fine
       console.log('Note: image_url column might already exist');
     }
@@ -57,8 +51,10 @@ export async function initializeSchema() {
     await db.execute('CREATE INDEX IF NOT EXISTS idx_images_post_id ON images(post_id)');
     
     return true;
-  } catch (error) {
-    console.error('Failed to initialize schema:', error);
+  } catch (err) {
+    console.error('Failed to initialize schema:', err);
     return false;
   }
 }
+
+initializeSchema();
