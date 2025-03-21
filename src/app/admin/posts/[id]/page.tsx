@@ -15,18 +15,12 @@ export default function EditPost({ params, searchParams }: PageProps) {
   const { status } = useSession();
   const router = useRouter();
   const [postId, setPostId] = useState<string | null>(null);
-  const [queryParams, setQueryParams] = useState<{ [key: string]: string | string[] | undefined } | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [resolvedParams, resolvedSearchParams] = await Promise.all([
-          params,
-          searchParams ? searchParams : Promise.resolve({})
-        ]);
-        
+        const resolvedParams = await params;
         setPostId(resolvedParams.id);
-        setQueryParams(resolvedSearchParams);
       } catch (error) {
         console.error('Error loading params:', error);
         router.push('/admin/posts');
@@ -34,7 +28,7 @@ export default function EditPost({ params, searchParams }: PageProps) {
     };
 
     loadData();
-  }, [params, searchParams, router]);
+  }, [params, router]);
 
   // Redirect if not authenticated
   if (status === 'unauthenticated') {
