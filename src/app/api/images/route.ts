@@ -37,10 +37,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Handle image deletions
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { publicId: string } }
-) {
+export async function DELETE(request: NextRequest) {
   try {
     // Check admin authorization
     const isAuthorized = await requireAdmin();
@@ -48,27 +45,23 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { publicId } = params;
+    // Get publicId from URL
+    const url = new URL(request.url);
+    const publicId = url.searchParams.get('publicId');
+
     if (!publicId) {
       return NextResponse.json(
-        { error: 'No public ID provided' },
+        { error: 'No publicId provided' },
         { status: 400 }
       );
     }
 
     // Delete from Cloudinary
-    const success = await deleteImage(publicId);
+    const result = await deleteImage(publicId);
 
-    if (success) {
-      return NextResponse.json({ success: true });
-    } else {
-      return NextResponse.json(
-        { error: 'Failed to delete image' },
-        { status: 500 }
-      );
-    }
+    return NextResponse.json(result);
   } catch (error) {
-    console.error('Error handling image deletion:', error);
+    console.error('Error deleting image:', error);
     return NextResponse.json(
       { error: 'Error deleting image' },
       { status: 500 }
