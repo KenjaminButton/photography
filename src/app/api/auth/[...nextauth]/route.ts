@@ -1,7 +1,6 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { validateEmail, validatePassword } from '@/lib/auth-utils';
-import { JWT } from 'next-auth/jwt';
 
 // Extend the built-in session types
 declare module 'next-auth' {
