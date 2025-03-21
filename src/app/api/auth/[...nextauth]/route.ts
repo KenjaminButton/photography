@@ -71,13 +71,14 @@ const handler = NextAuth({
       }
     })
   ],
-  pages: {
-    signIn: '/admin/login',
-    error: '/admin/login',
-  },
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: 'jwt',
     maxAge: 24 * 60 * 60, // 24 hours
+  },
+  pages: {
+    signIn: '/admin/login',
+    error: '/admin/login',
   },
   callbacks: {
     async jwt({ token, user }) {
