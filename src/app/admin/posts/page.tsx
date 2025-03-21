@@ -14,7 +14,7 @@ interface Post {
 }
 
 export default function PostsManagement() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);

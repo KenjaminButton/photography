@@ -1,6 +1,7 @@
 import { db } from '@/db/config';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 
 async function getPost(slug: string) {
   const result = await db.execute({
@@ -40,11 +41,14 @@ export default async function Post({ params }: { params: { slug: string } }) {
           <h1 className="text-4xl font-bold text-[#26294D] mb-8">{post.title}</h1>
           
           {post.image_url && (
-            <div className="mb-8">
-              <img
+            <div className="relative w-full h-[400px] mb-8">
+              <Image
                 src={post.image_url}
                 alt={post.title}
-                className="w-full rounded-lg shadow-lg"
+                fill
+                className="object-cover rounded-lg"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                priority
               />
             </div>
           )}
