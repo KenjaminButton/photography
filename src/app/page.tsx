@@ -1,14 +1,36 @@
 import { db } from '@/db/config';
 import Link from 'next/link';
+import Image from 'next/image';
 
-async function getPosts() {
-  const result = await db.execute(`
-    SELECT id, title, content, image_url, published_at, slug 
-    FROM posts 
-    WHERE status = 'published' 
-    ORDER BY published_at DESC
-  `);
-  return result.rows;
+interface Post {
+  id: string;
+  title: string;
+  content: string | Record<string, unknown>;
+  image_url: string | null;
+  published_at: number | null;
+  slug: string;
+}
+
+async function getPosts(): Promise<Post[]> {
+  const result = await db.execute({
+    sql: `
+      SELECT id, title, content, image_url, published_at, slug 
+      FROM posts 
+      WHERE status = 'published' 
+      ORDER BY published_at DESC
+    `,
+    args: []
+  });
+  
+  // Transform the raw rows into properly typed Post objects
+  return result.rows.map(row => ({
+    id: String(row.id),
+    title: String(row.title),
+    content: typeof row.content === 'string' ? row.content : JSON.parse(String(row.content)),
+    image_url: row.image_url ? String(row.image_url) : null,
+    published_at: row.published_at ? Number(row.published_at) : null,
+    slug: String(row.slug)
+  }));
 }
 
 export default async function Home() {
@@ -40,10 +62,12 @@ export default async function Home() {
                 <article className="relative overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-[1.02]">
                   <div className="aspect-[4/3] bg-[#26294D]/10">
                     {post.image_url && (
-                      <img
+                      <Image
                         src={post.image_url}
                         alt={post.title}
-                        className="h-full w-full object-cover"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                     )}
                   </div>

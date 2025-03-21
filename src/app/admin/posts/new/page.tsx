@@ -4,10 +4,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import Image from 'next/image';
 import AdminNav from '../../../../components/AdminNav';
 
 export default function NewPost() {
-  const { data: session, status: sessionStatus } = useSession();
+  const { status: sessionStatus } = useSession();
   const router = useRouter();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -146,11 +147,13 @@ export default function NewPost() {
                     className="mb-4 text-[#26294D]"
                   />
                   {imagePreview && (
-                    <div className="mt-4">
-                      <img
+                    <div className="mt-4 relative w-full h-[300px]">
+                      <Image
                         src={imagePreview}
                         alt="Preview"
-                        className="max-w-md rounded-md shadow-md"
+                        fill
+                        className="object-contain rounded-lg"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                     </div>
                   )}
