@@ -8,27 +8,33 @@ import AdminNav from '../../../../components/AdminNav';
 
 interface PageProps {
   params: Promise<{ id: string }>;
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default function EditPost({ params }: PageProps) {
+export default function EditPost({ params, searchParams }: PageProps) {
   const { status } = useSession();
   const router = useRouter();
   const [postId, setPostId] = useState<string | null>(null);
+  const [queryParams, setQueryParams] = useState<{ [key: string]: string | string[] | undefined } | null>(null);
 
   useEffect(() => {
-    const loadParams = async () => {
+    const loadData = async () => {
       try {
-        const resolvedParams = await params;
+        const [resolvedParams, resolvedSearchParams] = await Promise.all([
+          params,
+          searchParams ? searchParams : Promise.resolve({})
+        ]);
+        
         setPostId(resolvedParams.id);
+        setQueryParams(resolvedSearchParams);
       } catch (error) {
         console.error('Error loading params:', error);
         router.push('/admin/posts');
       }
     };
 
-    loadParams();
-  }, [params, router]);
+    loadData();
+  }, [params, searchParams, router]);
 
   // Redirect if not authenticated
   if (status === 'unauthenticated') {
