@@ -3,24 +3,41 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import AdminNav from '../../../../components/AdminNav';
 
 interface PageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 export default function EditPost({ params }: PageProps) {
   const { status } = useSession();
   const router = useRouter();
-  const { id } = params;
+  const [postId, setPostId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadParams = async () => {
+      try {
+        const resolvedParams = await params;
+        setPostId(resolvedParams.id);
+      } catch (error) {
+        console.error('Error loading params:', error);
+        router.push('/admin/posts');
+      }
+    };
+
+    loadParams();
+  }, [params, router]);
 
   // Redirect if not authenticated
   if (status === 'unauthenticated') {
     router.push('/admin/login');
     return null;
+  }
+
+  if (!postId) {
+    return <div>Loading...</div>;
   }
 
   return (
@@ -42,7 +59,7 @@ export default function EditPost({ params }: PageProps) {
             <div className="px-4 py-5 sm:p-6">
               <div className="text-gray-600">
                 {/* We'll add the post editing form here later */}
-                Editing post ID: {id}
+                Editing post ID: {postId}
               </div>
             </div>
           </div>
