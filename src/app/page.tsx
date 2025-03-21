@@ -60,7 +60,7 @@ export default async function Home() {
                 className="block group"
               >
                 <article className="relative overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-[1.02]">
-                  <div className="aspect-[4/3] bg-[#26294D]/10">
+                  <div className="aspect-[4/3] relative bg-[#26294D]/10">
                     {post.image_url && (
                       <Image
                         src={post.image_url}
@@ -68,16 +68,14 @@ export default async function Home() {
                         fill
                         className="object-cover"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        priority={posts.indexOf(post) === 0}
                       />
                     )}
                   </div>
-                  <div className="p-4">
-                    <h2 className="text-xl font-semibold text-[#26294D]">{post.title}</h2>
-                    <p className="mt-2 text-[#26294D]/80">
-                      {typeof post.content === 'string' 
-                        ? post.content.substring(0, 150) + '...'
-                        : JSON.stringify(post.content).substring(0, 150) + '...'}
-                    </p>
+                  <div className="p-4 text-center">
+                    <h2 className="text-xl font-semibold text-[#26294D] hover:text-[#E092C1] transition-colors line-clamp-2">
+                      {post.title}
+                    </h2>
                   </div>
                 </article>
               </Link>
