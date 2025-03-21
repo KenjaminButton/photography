@@ -69,7 +69,13 @@ export default async function Post({ params }: PageProps) {
         </Link>
         
         <article>
-          <h1 className="text-4xl font-bold text-[#26294D] mb-8">{post.title}</h1>
+          <h1 className="text-4xl font-bold text-[#26294D] mb-4">{post.title}</h1>
+          
+          {formattedDate && (
+            <div className="mb-8 text-sm text-[#26294D]/60">
+              {formattedDate}
+            </div>
+          )}
           
           {post.image_url && (
             <div className="relative w-full h-[400px] mb-8">
@@ -89,12 +95,6 @@ export default async function Post({ params }: PageProps) {
               ? post.content
               : JSON.stringify(post.content)}
           </div>
-          
-          {formattedDate && (
-            <div className="mt-8 text-[#26294D]/60">
-              Published on {formattedDate}
-            </div>
-          )}
         </article>
       </div>
     </main>

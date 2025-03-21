@@ -76,6 +76,13 @@ export default async function Home() {
                     <h2 className="text-xl font-semibold text-[#26294D] hover:text-[#E092C1] transition-colors line-clamp-2">
                       {post.title}
                     </h2>
+                    <p className="mt-2 text-sm text-[#26294D]/60">
+                      {post.published_at ? new Date(post.published_at * 1000).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      }) : 'Date not available'}
+                    </p>
                   </div>
                 </article>
               </Link>
