@@ -72,7 +72,7 @@ export default function EditPost({ params }: { params: Promise<{ id: string }> }
     if (!post) return;
 
     try {
-      const response = await fetch(`/api/posts/${post.slug}`, {
+      const response = await fetch(`/api/posts/${post.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -84,6 +84,7 @@ export default function EditPost({ params }: { params: Promise<{ id: string }> }
       });
 
       if (!response.ok) throw new Error('Failed to update post');
+      router.refresh(); 
       router.push('/admin/posts');
     } catch (error) {
       console.error('Error updating post:', error);

@@ -18,8 +18,8 @@ export async function GET(request: NextRequest) {
       const result = await db.execute(`
         SELECT id, title, slug, content, status, published_at, created_at, updated_at
         FROM posts
-        WHERE id = ?
-      `, [param]);
+        WHERE id = ? OR slug = ?
+      `, [param, param]);
 
       if (result.rows.length > 0) {
         return NextResponse.json(result.rows[0]);
@@ -50,10 +50,10 @@ export async function PUT(request: NextRequest) {
     return await withAdmin(async () => {
       validateMethod(request, ['PUT']);
       
-      // Get slug from URL
-      const slug = request.nextUrl.pathname.split('/').pop();
-      if (!slug) {
-        return NextResponse.json({ error: 'Slug is required' }, { status: 400 });
+      // Get post ID from URL
+      const param = request.nextUrl.pathname.split('/').pop();
+      if (!param) {
+        return NextResponse.json({ error: 'Post ID is required' }, { status: 400 });
       }
 
       const body = await request.json();
@@ -66,12 +66,12 @@ export async function PUT(request: NextRequest) {
         );
       }
 
-      // Generate new slug if title changed
+      // Generate new slug from title
       const newSlug = title.toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)/g, '');
 
-      // Update the post, preserving published_at date
+      // Update the post using post ID instead of slug
       const result = await db.execute(`
         UPDATE posts 
         SET title = ?, 
@@ -80,7 +80,7 @@ export async function PUT(request: NextRequest) {
             status = ?,
             published_at = COALESCE(?, published_at),
             updated_at = unixepoch()
-        WHERE slug = ?
+        WHERE id = ? OR slug = ?
         RETURNING *
       `, [
         title,
@@ -88,7 +88,8 @@ export async function PUT(request: NextRequest) {
         newSlug,
         status || 'draft',
         published_at,
-        slug
+        param,
+        param
       ]);
 
       if (result.rows.length === 0) {
