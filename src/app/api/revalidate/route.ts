@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ revalidated: true, now: Date.now() });
     });
   } catch (error) {
+    console.error('Revalidation error:', error);
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 }
