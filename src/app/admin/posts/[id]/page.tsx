@@ -52,6 +52,12 @@ export default function EditPost({ params }: PageProps) {
             >
               Back to Posts
             </Link>
+            <Link
+              href={`/admin/posts/${postId}/edit`}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2"
+            >
+              Edit Post
+            </Link>
           </div>
           
           <div className="bg-white shadow rounded-lg">

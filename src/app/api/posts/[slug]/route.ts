@@ -2,20 +2,36 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db/config';
 import { validateMethod, withAdmin } from '@/lib/auth';
 
-// GET a single post by slug (public)
+// GET a single post by slug or id (public for published, admin for drafts)
 export async function GET(request: NextRequest) {
   try {
-    // Get slug from URL
-    const slug = request.nextUrl.pathname.split('/').pop();
-    if (!slug) {
-      return NextResponse.json({ error: 'Slug is required' }, { status: 400 });
+    const param = request.nextUrl.pathname.split('/').pop();
+    if (!param) {
+      return NextResponse.json({ error: 'Identifier is required' }, { status: 400 });
     }
 
+    // Check if it's an admin request (has valid session)
+    const isAdmin = await withAdmin(async () => true).catch(() => false);
+
+    // For admin, get any post by ID
+    if (isAdmin) {
+      const result = await db.execute(`
+        SELECT id, title, slug, content, status, published_at, created_at, updated_at
+        FROM posts
+        WHERE id = ?
+      `, [param]);
+
+      if (result.rows.length > 0) {
+        return NextResponse.json(result.rows[0]);
+      }
+    }
+
+    // For public or fallback, only get published posts by slug
     const result = await db.execute(`
-      SELECT id, title, slug, content, published_at, created_at, updated_at
+      SELECT id, title, slug, content, status, published_at, created_at, updated_at
       FROM posts
       WHERE slug = ? AND status = 'published'
-    `, [slug]);
+    `, [param]);
 
     if (result.rows.length === 0) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
