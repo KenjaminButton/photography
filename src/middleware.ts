@@ -10,12 +10,13 @@ export async function middleware(request: NextRequest) {
   response.headers.set(
     'Content-Security-Policy',
     "default-src 'self'; " +
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' *.google.com maps.googleapis.com; " +
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' *.googleapis.com; " +
     "style-src 'self' 'unsafe-inline' *.googleapis.com; " +
-    "img-src 'self' data: blob: *.google.com *.googleapis.com *.gstatic.com; " +
-    "frame-src 'self' *.google.com; " +
-    "frame-ancestors 'self'; " +
-    "connect-src 'self' *.google.com maps.googleapis.com"
+    "img-src 'self' data: blob: *.googleapis.com *.gstatic.com; " +
+    "frame-src 'self' *.google.com *.googleapis.com; " +
+    "connect-src 'self' *.googleapis.com; " +
+    "font-src 'self' data: *.gstatic.com; " +
+    "worker-src 'self' blob:;"
   );
 
   // Only check auth for admin routes
