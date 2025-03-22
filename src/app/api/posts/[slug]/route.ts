@@ -57,7 +57,7 @@ export async function PUT(request: NextRequest) {
       }
 
       const body = await request.json();
-      const { title, content, status } = body;
+      const { title, content, status, published_at } = body;
       
       if (!title || !content) {
         return NextResponse.json(
@@ -71,14 +71,14 @@ export async function PUT(request: NextRequest) {
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)/g, '');
 
-      // Update the post
+      // Update the post, preserving published_at date
       const result = await db.execute(`
         UPDATE posts 
         SET title = ?, 
             content = ?,
             slug = ?,
             status = ?,
-            published_at = ?,
+            published_at = COALESCE(?, published_at),
             updated_at = unixepoch()
         WHERE slug = ?
         RETURNING *
@@ -87,7 +87,7 @@ export async function PUT(request: NextRequest) {
         JSON.stringify(content),
         newSlug,
         status || 'draft',
-        status === 'published' ? 'unixepoch()' : null,
+        published_at,
         slug
       ]);
 

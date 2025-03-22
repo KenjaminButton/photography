@@ -13,13 +13,12 @@ interface Post {
   slug: string;
   status: string;
   published_at?: string;
-  created_at?: string;
-  updated_at?: string;
 }
 
 interface FormState {
   title: string;
   content: string;
+  published_at?: string;
 }
 
 export default function EditPost({ params }: { params: Promise<{ id: string }> }) {
@@ -28,7 +27,7 @@ export default function EditPost({ params }: { params: Promise<{ id: string }> }
   const [post, setPost] = useState<Post | null>(null);
   const [formState, setFormState] = useState<FormState>({
     title: '',
-    content: ''
+    content: '',
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -54,7 +53,8 @@ export default function EditPost({ params }: { params: Promise<{ id: string }> }
         setPost(data);
         setFormState({
           title: data.title || '',
-          content: data.content || ''
+          content: data.content || '',
+          published_at: data.published_at
         });
       } catch (error) {
         console.error('Error:', error);
@@ -78,7 +78,8 @@ export default function EditPost({ params }: { params: Promise<{ id: string }> }
         body: JSON.stringify({
           title: formState.title,
           content: formState.content,
-          status: 'published'
+          status: 'published',
+          published_at: formState.published_at
         }),
       });
 
@@ -101,6 +102,11 @@ export default function EditPost({ params }: { params: Promise<{ id: string }> }
   if (!post) {
     return <div>Post not found</div>;
   }
+
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'Not published yet';
+    return new Date(parseInt(dateString) * 1000).toLocaleString();
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -127,8 +133,13 @@ export default function EditPost({ params }: { params: Promise<{ id: string }> }
               </label>
               <MarkdownEditor 
                 value={formState.content} 
-                onChange={(value) => setFormState(prev => ({ ...prev, content: value }))} 
+                onChange={(value) => setFormState(prev => ({ ...prev, content: value }))}
               />
+            </div>
+            <div className="mt-4">
+              <p className="text-sm text-gray-600">
+                <strong>Published:</strong> {formatDate(formState.published_at)}
+              </p>
             </div>
             <div className="flex justify-end gap-4">
               <button
