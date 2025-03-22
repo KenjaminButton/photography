@@ -22,7 +22,7 @@ interface FormState {
 }
 
 export default function EditPost({ params }: { params: Promise<{ id: string }> }) {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const [post, setPost] = useState<Post | null>(null);
   const [formState, setFormState] = useState<FormState>({
