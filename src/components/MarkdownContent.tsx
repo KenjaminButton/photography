@@ -3,7 +3,6 @@
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 
 interface MarkdownContentProps {
   content: string;
@@ -12,13 +11,11 @@ interface MarkdownContentProps {
 export default function MarkdownContent({ content }: MarkdownContentProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  // Remove escape characters and clean up newlines
   const cleanContent = content
-    .replace(/\\n/g, '\n')  // Replace \n with actual newlines
-    .replace(/^"|"$/g, '')  // Remove surrounding quotes
-    .replace(/\\"/g, '"');  // Replace escaped quotes with regular quotes
+    .replace(/\\n/g, '\n')
+    .replace(/^"|"$/g, '')
+    .replace(/\\"/g, '"');
 
-  // Add custom styles for markdown content
   useEffect(() => {
     const style = document.createElement('style');
     style.innerHTML = `
@@ -68,38 +65,30 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
               if (!props.src) return null;
               return <iframe {...props} style={{ border: 0 }} />;
             },
-            img: ({ src, alt, ...props }) => {
+            img: ({ src, alt }) => {
               // Handle markdown image syntax with ![]()
               if (typeof src === 'string' && src.startsWith('![')) {
                 const match = src.match(/!\[(.*?)\]\((.*?)\)/);
                 if (match) {
                   return (
-                    <figure className="my-8" onClick={() => setSelectedImage(match[2] || null)}>
-                      <Image
-                        src={match[2]}
-                        alt={match[1]}
-                        width={1200}
-                        height={675}
-                        className="w-full object-cover rounded-lg hover:opacity-95 transition-opacity"
-                        priority
-                        {...props}
-                      />
-                    </figure>
+                    <img
+                      src={match[2]}
+                      alt={match[1]}
+                      className="w-full max-h-[400px] object-cover rounded-lg hover:opacity-95 transition-opacity my-8 cursor-pointer"
+                      onClick={() => setSelectedImage(match[2] || null)}
+                      loading="lazy"
+                    />
                   );
                 }
               }
               return (
-                <figure className="my-8" onClick={() => setSelectedImage(src || null)}>
-                  <Image
-                    src={src}
-                    alt={alt}
-                    width={1200}
-                    height={675}
-                    className="w-full object-cover rounded-lg hover:opacity-95 transition-opacity"
-                    priority
-                    {...props}
-                  />
-                </figure>
+                <img
+                  src={src}
+                  alt={alt}
+                  className="w-full max-h-[400px] object-cover rounded-lg hover:opacity-95 transition-opacity my-8 cursor-pointer"
+                  onClick={() => setSelectedImage(src || null)}
+                  loading="lazy"
+                />
               );
             }
           }}
