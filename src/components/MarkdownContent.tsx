@@ -122,7 +122,7 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
       <ReactMarkdown 
         rehypePlugins={[rehypeRaw]} 
         components={{
-          iframe: ({ node, ...props }) => (
+          iframe: (props) => (
             <iframe {...props} style={{ border: 0 }} />
           )
         }}
