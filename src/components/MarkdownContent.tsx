@@ -9,10 +9,21 @@ interface MarkdownContentProps {
 }
 
 export default function MarkdownContent({ content }: MarkdownContentProps) {
+  // Debug the content
+  useEffect(() => {
+    console.log('Raw content:', content);
+  }, [content]);
+
   // Remove escape characters and clean up newlines
   const cleanContent = content
     .replace(/\\n/g, '\n')  // Replace \n with actual newlines
-    .replace(/^"|"$/g, ''); // Remove surrounding quotes
+    .replace(/^"|"$/g, '')  // Remove surrounding quotes
+    .replace(/\\"/g, '"');  // Replace escaped quotes with regular quotes
+
+  // Debug the cleaned content
+  useEffect(() => {
+    console.log('Cleaned content:', cleanContent);
+  }, [cleanContent]);
 
   // Add custom styles for markdown content
   useEffect(() => {
@@ -120,12 +131,11 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
   return (
     <div className="markdown-body p-6 rounded-lg bg-white shadow-sm" data-color-mode="light">
       <ReactMarkdown 
-        rehypePlugins={[rehypeRaw]} 
+        rehypePlugins={[rehypeRaw]}
         components={{
-          iframe: ({ src, ...props }) => {
-            // Don't render iframe if src is empty or undefined
-            if (!src) return null;
-            return <iframe src={src} {...props} style={{ border: 0 }} />;
+          iframe: ({ node, ...props }) => {
+            if (!props.src) return null;
+            return <iframe {...props} style={{ border: 0 }} />;
           }
         }}
       >
