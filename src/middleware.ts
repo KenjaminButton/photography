@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import type { NextRequest } from 'next/server';
 
-export function withAdmin(request: NextRequest) {
+export async function withAdmin(request: NextRequest) {
   // Allow access to login page
   if (request.nextUrl.pathname === '/admin/login') {
     return NextResponse.next();
@@ -32,7 +32,7 @@ export function withAdmin(request: NextRequest) {
   return response;
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   // Check if the request is for an admin route
   if (request.nextUrl.pathname.startsWith('/admin')) {
     return withAdmin(request);
