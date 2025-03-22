@@ -16,6 +16,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Kenjamin Button Photography",
   description: "Photography Portfolio and Blog",
+  metadataBase: new URL('https://kenjaminbutton.com')
+};
+
+export const viewport = {
   colorScheme: "light",
 };
 

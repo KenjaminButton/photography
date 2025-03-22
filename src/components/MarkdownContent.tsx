@@ -3,6 +3,7 @@
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 interface MarkdownContentProps {
   content: string;
@@ -11,21 +12,11 @@ interface MarkdownContentProps {
 export default function MarkdownContent({ content }: MarkdownContentProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  // Debug the content
-  useEffect(() => {
-    console.log('Raw content:', content);
-  }, [content]);
-
   // Remove escape characters and clean up newlines
   const cleanContent = content
     .replace(/\\n/g, '\n')  // Replace \n with actual newlines
     .replace(/^"|"$/g, '')  // Remove surrounding quotes
     .replace(/\\"/g, '"');  // Replace escaped quotes with regular quotes
-
-  // Debug the cleaned content
-  useEffect(() => {
-    console.log('Cleaned content:', cleanContent);
-  }, [cleanContent]);
 
   // Add custom styles for markdown content
   useEffect(() => {
@@ -48,113 +39,13 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
         line-height: 1.3;
       }
 
-      .markdown-body h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
-      }
-
-      .markdown-body h2 {
-        font-size: 2rem;
-        font-weight: 600;
-      }
-
       .markdown-body p {
-        font-size: 1.125rem;
-        line-height: 1.75;
-        margin: 1.5rem 0;
-        color: #4A5568;
-      }
-
-      .markdown-body code {
-        font-family: var(--font-geist-mono);
-        background: #F7FAFC;
-        padding: 0.2em 0.4em;
-        border-radius: 0.25rem;
-        font-size: 0.875em;
-      }
-
-      .markdown-body pre code {
-        background: transparent;
-        padding: 0;
-      }
-
-      .markdown-body blockquote {
-        border-left: 4px solid #26294D;
-        padding-left: 1rem;
-        font-style: italic;
-        color: #4A5568;
+        margin-bottom: 1.5rem;
       }
 
       .markdown-body img {
-        display: block;
-        max-width: 100%;
-        height: auto;
-        margin: 2rem auto;
-        border-radius: 0.5rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        cursor: pointer;
-        transition: transform 0.2s ease-in-out;
-      }
-
-      .markdown-body img:hover {
-        transform: scale(1.02);
-      }
-
-      .markdown-body iframe {
-        display: block;
-        max-width: 100%;
-        margin: 2rem auto;
-        border-radius: 0.5rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      }
-
-      .markdown-body ul,
-      .markdown-body ol {
-        padding-left: 1.5rem;
-        margin: 1.5rem 0;
-      }
-
-      .markdown-body li {
-        margin: 0.5rem 0;
-        color: #4A5568;
-      }
-
-      .markdown-body hr {
-        border: 0;
-        border-top: 2px solid #E2E8F0;
-        margin: 2rem 0;
-      }
-
-      .markdown-body a {
-        color: #26294D;
-        text-decoration: underline;
-      }
-
-      .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.9);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 50;
-        padding: 2rem;
-        cursor: zoom-out;
-      }
-
-      .modal-image {
-        max-width: 95vw;
-        max-height: 95vh;
-        object-fit: contain;
-        border-radius: 0.5rem;
-      }
-
-      @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+        margin-top: 2rem;
+        margin-bottom: 2rem;
       }
 
       .modal-overlay {
@@ -177,14 +68,40 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
               if (!props.src) return null;
               return <iframe {...props} style={{ border: 0 }} />;
             },
-            img: ({ src, alt, ...props }) => (
-              <img
-                src={src}
-                alt={alt}
-                onClick={() => setSelectedImage(src || null)}
-                {...props}
-              />
-            )
+            img: ({ src, alt, ...props }) => {
+              // Handle markdown image syntax with ![]()
+              if (typeof src === 'string' && src.startsWith('![')) {
+                const match = src.match(/!\[(.*?)\]\((.*?)\)/);
+                if (match) {
+                  return (
+                    <figure className="my-8" onClick={() => setSelectedImage(match[2] || null)}>
+                      <Image
+                        src={match[2]}
+                        alt={match[1]}
+                        width={1200}
+                        height={675}
+                        className="w-full object-cover rounded-lg hover:opacity-95 transition-opacity"
+                        priority
+                        {...props}
+                      />
+                    </figure>
+                  );
+                }
+              }
+              return (
+                <figure className="my-8" onClick={() => setSelectedImage(src || null)}>
+                  <Image
+                    src={src}
+                    alt={alt}
+                    width={1200}
+                    height={675}
+                    className="w-full object-cover rounded-lg hover:opacity-95 transition-opacity"
+                    priority
+                    {...props}
+                  />
+                </figure>
+              );
+            }
           }}
         >
           {cleanContent}
