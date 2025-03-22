@@ -84,6 +84,10 @@ export default function EditPost({ params }: { params: Promise<{ id: string }> }
       });
 
       if (!response.ok) throw new Error('Failed to update post');
+      
+      // Force revalidate the homepage
+      await fetch('/api/revalidate?path=/');
+      
       router.refresh(); 
       router.push('/admin/posts');
     } catch (error) {

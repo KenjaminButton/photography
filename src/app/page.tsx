@@ -1,6 +1,7 @@
 import { db } from '@/db/config';
 import Link from 'next/link';
 import Image from 'next/image';
+import { unstable_noStore as noStore } from 'next/cache';
 
 interface Post {
   id: string;
@@ -12,6 +13,9 @@ interface Post {
 }
 
 async function getPosts(): Promise<Post[]> {
+  // Opt out of caching for this request
+  noStore();
+  
   const result = await db.execute({
     sql: `
       SELECT id, title, content, image_url, published_at, slug 
