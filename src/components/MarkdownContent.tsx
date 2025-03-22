@@ -181,7 +181,7 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
               <img
                 src={src}
                 alt={alt}
-                onClick={() => setSelectedImage(src)}
+                onClick={() => setSelectedImage(src || null)}
                 {...props}
               />
             )
