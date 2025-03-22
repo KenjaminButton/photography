@@ -53,7 +53,7 @@ export default function EditPost({ params }: { params: Promise<{ id: string }> }
         setPost(data);
         setFormState({
           title: data.title || '',
-          content: data.content || '',
+          content: typeof data.content === 'string' ? JSON.parse(data.content) : data.content || '',
           published_at: data.published_at
         });
       } catch (error) {
