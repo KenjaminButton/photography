@@ -34,3 +34,22 @@ export async function middleware(request: NextRequest) {
   // Non-admin routes are public
   return NextResponse.next();
 }
+
+export function configureCSPMiddleware(request: NextRequest) {
+  // Get the existing response
+  const response = NextResponse.next();
+
+  // Add security headers
+  response.headers.set(
+    'Content-Security-Policy',
+    `frame-ancestors 'self';
+     frame-src 'self' https://www.google.com/;
+     child-src 'self' https://www.google.com/;`
+  );
+
+  return response;
+}
+
+export const configureCSPConfig = {
+  matcher: '/:path*',
+}
