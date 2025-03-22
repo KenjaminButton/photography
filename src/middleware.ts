@@ -6,10 +6,16 @@ import { getToken } from 'next-auth/jwt';
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
   
-  // Add CSP headers for all routes
+  // Add CSP headers for all routes with comprehensive Google Maps domains
   response.headers.set(
     'Content-Security-Policy',
-    "frame-ancestors 'self'; frame-src 'self' https://www.google.com/; child-src 'self' https://www.google.com/"
+    "default-src 'self'; " +
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' *.google.com maps.googleapis.com; " +
+    "style-src 'self' 'unsafe-inline' *.googleapis.com; " +
+    "img-src 'self' data: blob: *.google.com *.googleapis.com *.gstatic.com; " +
+    "frame-src 'self' *.google.com; " +
+    "frame-ancestors 'self'; " +
+    "connect-src 'self' *.google.com maps.googleapis.com"
   );
 
   // Only check auth for admin routes
