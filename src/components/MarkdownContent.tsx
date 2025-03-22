@@ -2,13 +2,15 @@
 
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface MarkdownContentProps {
   content: string;
 }
 
 export default function MarkdownContent({ content }: MarkdownContentProps) {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
   // Debug the content
   useEffect(() => {
     console.log('Raw content:', content);
@@ -90,6 +92,12 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
         margin: 2rem auto;
         border-radius: 0.5rem;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: transform 0.2s ease-in-out;
+      }
+
+      .markdown-body img:hover {
+        transform: scale(1.02);
       }
 
       .markdown-body iframe {
@@ -121,6 +129,37 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
         color: #26294D;
         text-decoration: underline;
       }
+
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 50;
+        padding: 2rem;
+        cursor: zoom-out;
+      }
+
+      .modal-image {
+        max-width: 95vw;
+        max-height: 95vh;
+        object-fit: contain;
+        border-radius: 0.5rem;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      .modal-overlay {
+        animation: fadeIn 0.3s ease-out;
+      }
     `;
     document.head.appendChild(style);
     return () => {
@@ -129,18 +168,42 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
   }, []);
 
   return (
-    <div className="markdown-body p-6 rounded-lg bg-white shadow-sm" data-color-mode="light">
-      <ReactMarkdown 
-        rehypePlugins={[rehypeRaw]}
-        components={{
-          iframe: (props) => {
-            if (!props.src) return null;
-            return <iframe {...props} style={{ border: 0 }} />;
-          }
-        }}
-      >
-        {cleanContent}
-      </ReactMarkdown>
-    </div>
+    <>
+      <div className="markdown-body p-6 rounded-lg bg-white shadow-sm" data-color-mode="light">
+        <ReactMarkdown 
+          rehypePlugins={[rehypeRaw]}
+          components={{
+            iframe: (props) => {
+              if (!props.src) return null;
+              return <iframe {...props} style={{ border: 0 }} />;
+            },
+            img: ({ src, alt, ...props }) => (
+              <img
+                src={src}
+                alt={alt}
+                onClick={() => setSelectedImage(src)}
+                {...props}
+              />
+            )
+          }}
+        >
+          {cleanContent}
+        </ReactMarkdown>
+      </div>
+
+      {selectedImage && (
+        <div 
+          className="modal-overlay"
+          onClick={() => setSelectedImage(null)}
+        >
+          <img
+            src={selectedImage}
+            alt="Full size"
+            className="modal-image"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
+    </>
   );
 }
