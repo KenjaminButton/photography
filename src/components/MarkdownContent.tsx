@@ -1,6 +1,7 @@
 'use client';
 
-import MDEditor from '@uiw/react-md-editor';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 import { useEffect } from 'react';
 
 interface MarkdownContentProps {
@@ -80,6 +81,14 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
       }
 
+      .markdown-body iframe {
+        display: block;
+        max-width: 100%;
+        margin: 2rem auto;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+
       .markdown-body ul,
       .markdown-body ol {
         padding-left: 1.5rem;
@@ -100,12 +109,6 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
       .markdown-body a {
         color: #26294D;
         text-decoration: underline;
-        text-decoration-thickness: 0.1em;
-        text-underline-offset: 0.2em;
-      }
-
-      .markdown-body a:hover {
-        color: #1a1b33;
       }
     `;
     document.head.appendChild(style);
@@ -115,8 +118,17 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
   }, []);
 
   return (
-    <div data-color-mode="light" className="markdown-body p-6 rounded-lg bg-white shadow-sm">
-      <MDEditor.Markdown source={cleanContent} />
+    <div className="markdown-body p-6 rounded-lg bg-white shadow-sm" data-color-mode="light">
+      <ReactMarkdown 
+        rehypePlugins={[rehypeRaw]} 
+        components={{
+          iframe: ({ node, ...props }) => (
+            <iframe {...props} style={{ border: 0 }} />
+          )
+        }}
+      >
+        {cleanContent}
+      </ReactMarkdown>
     </div>
   );
 }
